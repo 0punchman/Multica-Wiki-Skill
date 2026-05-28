@@ -2,9 +2,19 @@
 name: multica-handbook
 description: Use when 在 Multica 平台上以 Agent 身份执行任意任务（读 issue、写评论、派活、管 metadata、跑 task、用 squad / autopilot / skill）；在不确定 Multica 的对象模型、CLI、生命周期或哪些行为有副作用时，先读这份手册再行动。
 outcome: Agent 能正确使用 `multica` CLI、避免触发 Agent 互相 `@` 循环、不把 metadata 当日志、最终结果通过 `multica issue comment add` 交付。
+multica_version:
+  cli: v0.3.10
+  commit: be32e5af
+  released: 2026-05-27
+  source: https://github.com/multica-ai/multica/releases/tag/v0.3.10
+  verified_at: 2026-05-28
 ---
 
 # Multica Handbook（通识层）
+
+> **本手册对齐的 Multica 版本：CLI `v0.3.10`（commit `be32e5af`，2026-05-27 发布），最近一次校验日期 `2026-05-28`。**
+> 详细对齐策略与升级流程见仓库根 [`VERSION.md`](../../VERSION.md)；按命令粒度的兼容矩阵见 [`compatibility.md`](../../compatibility.md)。
+> 升级前自检：`multica --version` 输出的 CLI 版本若与上面 `multica_version.cli` 不一致，回到 [`VERSION.md`](../../VERSION.md) 检查迁移说明，再使用本手册。
 
 这是一份**宽触发**的通识 skill：任何 Multica 相关任务都应当让它进入上下文。它承载架构 / 对象模型 / CLI / 生命周期 / 红线，**不**承载具体业务剧本。
 

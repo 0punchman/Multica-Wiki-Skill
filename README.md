@@ -3,6 +3,16 @@
 > 这个仓库里的所有内容都以 **Skill** 形式组织，给在 Multica 平台上跑任务的 Agent 用。
 > 仓库当前名字仍是 `Multica_Wiki`（外链兼容），改名 `Multica_Skills` 留作后续单独 issue。
 
+## 当前对齐的 Multica 版本
+
+**CLI `v0.3.10`** · commit `be32e5af` · [Release tag](https://github.com/multica-ai/multica/releases/tag/v0.3.10) · 最近一次校验 **2026-05-28**
+
+- 单条 Skill 的对齐声明在各自 `SKILL.md` 的 `multica_version` frontmatter；
+- 整库的对齐策略 / 兼容范围 / 升级流程 / 变更日志见 [`VERSION.md`](VERSION.md)；
+- 按命令粒度的兼容矩阵（用于自动化 diff）见 [`compatibility.md`](compatibility.md)。
+
+跨 minor 升级（例：`v0.3.x → v0.4.0`）前**必须**先跑 [`VERSION.md` 里的"升级自检"](VERSION.md#升级自检跑完一次再宣布已对齐到新版)。
+
 ## 两层结构（不可互替）
 
 | 层 | 触发宽度 | 作用 | 例子 |
