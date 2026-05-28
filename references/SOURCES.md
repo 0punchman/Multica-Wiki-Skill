@@ -13,7 +13,7 @@
 
 | 上游文件 | 本仓主要落点 |
 |---|---|
-| `README.md` | [01-architecture.md](01-architecture.md), [README.md](README.md) |
+| `README.md` | [01-architecture.md](01-architecture.md), [`../README.md`](../README.md) |
 | `CLAUDE.md` | [01-architecture.md](01-architecture.md), [02-entities.md](02-entities.md) |
 | `AGENTS.md` | （指针文档，被 CLAUDE.md 包含） |
 | `CLI_AND_DAEMON.md` | [03-cli-cheatsheet.md](03-cli-cheatsheet.md), [11-autopilots.md](11-autopilots.md), [12-providers.md](12-providers.md) |

@@ -131,4 +131,4 @@ multica daemon logs -n 200       # 最近 200 行
 
 ——
 
-这是最后一篇正文。回到 [README.md](README.md) 浏览全部章节，或看 [SOURCES.md](SOURCES.md) 了解这份 Wiki 的素材来源。
+这是最后一篇正文。回到 [SKILL.md](../SKILL.md) 浏览全部章节，或看 [SOURCES.md](SOURCES.md) 了解这份 Skill 的素材来源。
