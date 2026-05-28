@@ -7,7 +7,7 @@
 ## 安装
 
 ```bash
-multica skill import https://github.com/0punchman/Multica-Wiki-Skill
+multica skill import --url https://github.com/0punchman/Multica-Wiki-Skill
 ```
 
 导入到 Workspace 后还需要挂到具体 Agent 才生效（详见 [`references/09-skills.md`](references/09-skills.md)）。**建议工作区内每个 Multica Agent 都挂这条 Skill。**

@@ -174,12 +174,14 @@ multica agent update <slug> ...
 multica agent archive <slug>
 multica agent restore <slug>
 multica agent tasks   <slug>            # 这个 agent 的任务历史
-multica agent skills  <slug>            # 嵌套：挂载/卸载 skill
+multica agent skills list <slug>        # 列出当前挂载的 skill
+multica agent skills set  <slug> --skill-ids <id1,id2,...>  # ⚠️ 全量替换，不是增量
 
 multica skill list / get / create / update / delete
-multica skill import --from-github <url>
-multica skill import --from-clawhub  <slug>
-multica skill files  <skill-id> ...
+multica skill import --url <URL>           # URL 来源自动识别：clawhub.ai / skills.sh / github.com
+multica skill files  list   <skill-id>
+multica skill files  upsert <skill-id> --path <p> --content <c>
+multica skill files  delete <skill-id> --path <p>
 ```
 
 ## Squad（小队）

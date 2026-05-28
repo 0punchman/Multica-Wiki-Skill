@@ -18,7 +18,10 @@
 | `multica issue comment add` | [05-comments-and-mentions.md](references/05-comments-and-mentions.md) — **🚨 Agent 唯一可见输出** | v0.3.10 | 2026-05-28 | **high**（错了用户看不到结果） |
 | `multica issue comment list` | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [05-comments-and-mentions.md](references/05-comments-and-mentions.md) | v0.3.10 | 2026-05-28 | medium（flag 在最近版本细化过 thread/recent/before-id） |
 | `multica issue metadata list / set / delete` | [06-metadata.md](references/06-metadata.md) | v0.3.10 | 2026-05-28 | medium（推荐 key 列表会变） |
-| `multica skill list / get / files / import` | [09-skills.md](references/09-skills.md) | v0.3.10 | 2026-05-28 | low |
+| `multica skill list / get / create / update / delete` | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [09-skills.md](references/09-skills.md) | v0.3.10 | 2026-05-28 | low |
+| `multica skill import --url` | [README.md](README.md), [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [09-skills.md](references/09-skills.md) | v0.3.10 | 2026-05-28 | **high**（错了用户挂不上 skill；v0.3.x 只有单 flag `--url`） |
+| `multica skill files list / upsert / delete` | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [09-skills.md](references/09-skills.md) | v0.3.10 | 2026-05-28 | medium（`upsert` 不是 `upload`） |
+| `multica agent skills list / set` | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [09-skills.md](references/09-skills.md) | v0.3.10 | 2026-05-28 | **high**（`set` 全量替换；v0.3.x 没有 `add` / `remove`） |
 | `multica repo checkout` | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md), [SOURCES.md](references/SOURCES.md) | v0.3.10 | 2026-05-28 | low |
 | `multica autopilot ...` | [11-autopilots.md](references/11-autopilots.md) | v0.3.10 | 待逐子命令落表 | medium |
 | `multica squad ...` | [10-squads.md](references/10-squads.md) | v0.3.10 | 待逐子命令落表 | medium |

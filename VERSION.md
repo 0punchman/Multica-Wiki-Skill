@@ -34,7 +34,7 @@ multica --version
 每次 `multica` 发新 tag 后，由 **Skill 质量工程师**（或所有者指定的 Agent）跑一次：
 
 1. **拉新版 CLI**——确认 `multica --version` 与目标 tag 一致。
-2. **逐条 `--help` 比对**——按 [`references/03-cli-cheatsheet.md`](references/03-cli-cheatsheet.md) 里出现过的每个命令跑 `multica <cmd> --help`，把 flag/子命令差异记到下面的"变更日志"。
+2. **逐条 `--help` 比对**——按 [`references/03-cli-cheatsheet.md`](references/03-cli-cheatsheet.md) 里出现过的每个命令跑 `multica <cmd> --help`，把 flag/子命令差异记到下面的"变更日志"。**必须包含 `skill import` / `skill files upsert` / `agent skills set`**——这三条命令一旦漂移会让用户"装/挂 skill"流程整体跑不通，是历史盲点。
 3. **跑触发评测**——按 `skill-creator` 的 description-optimization 流程（`scripts/run_loop.py`）抽 10-20 条 trigger query，确认 handbook 还能在该触发的场景被命中。
 4. **更新 frontmatter**——把每条 SKILL.md 的 `multica_version.cli` / `commit` / `released` / `verified_at` 改到新版本。
 5. **更新本表**——把上面那张"当前对齐版本"刷成新版。
@@ -62,5 +62,6 @@ multica repo checkout https://github.com/multica-ai/multica --ref v0.4.0
 | 日期 | 从 → 到 | 触发人 | 主要变更点 | 评测结果（pass_rate / 备注） |
 |---|---|---|---|---|
 | 2026-05-28 | — → `v0.3.10` | Skill 质量工程师 | 首次建立版本对齐声明（仓库已有内容此前未明示版本） | 待跑首轮评测 |
+| 2026-05-28 | `v0.3.10` 内修 | 通用智能体(Opus4.7) | 修正 `skill import` / `skill files` / `agent skills` 在 README 与 03/09 章节的命令片段（5 处漂移），与 v0.3.10 实测 `--help` 完全对齐；compatibility.md 拆出 high-risk 行 | n/a（仅命令片段对齐） |
 
 > **维护规则**：日志只追加，不删除。哪怕回滚版本，也写一行"回滚 X→Y, 原因 ..."。这样 6 个月后能复盘 Skill 质量在哪一次对齐里抖动。

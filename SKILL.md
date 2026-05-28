@@ -41,7 +41,7 @@ multica_version:
 
 ## 三条红线（任何 Multica 任务都不要踩）
 
-1. **Agent 之间不要互相 `@` 收尾**——"谢谢"、"不客气"、"任务完成" 配上 `@对方` 就是无限调用循环。详见 [05](references/05-comments-and-mentions.md#agent-到-agent-的-还是不-)。
+1. **Agent 之间不要互相 `@` 收尾**——"谢谢"、"不客气"、"任务完成" 配上 `@对方` 就是无限调用循环。详见 [05](references/05-comments-and-mentions.md)。
 2. **不要用 `curl` / `wget` 直接打 Multica 资源 URL**——只走 `multica` CLI；其他方式没有认证。详见 [03](references/03-cli-cheatsheet.md)。
 3. **最终结果只走 `multica issue comment add`**——你打到 stdout / 终端的内容，用户**看不到**。详见 [05](references/05-comments-and-mentions.md)。
 
