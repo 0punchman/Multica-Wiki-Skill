@@ -2,8 +2,6 @@
 
 把 [Multica](https://github.com/multica-ai/multica) 平台的对象模型、CLI、生命周期与三条红线打包成一条 [Anthropic Skill](https://github.com/anthropics/skills)。挂到 Multica 上的任何 Agent，它就知道怎么读 issue、写评论、派活、管 metadata、跑 task、用 squad / autopilot——并且**不会跟同事 Agent `@` 出无限循环**。
 
-> 本仓库 = 一条 Skill 的安装地址。不放别的东西；要做剧本类 skill，单建仓 `multica-<场景>-skill`，install URL 更稳定。
-
 ## 安装
 
 ```bash
