@@ -6,13 +6,13 @@
 
 | Skill | 对齐 CLI 版本 | 对齐 commit | Release tag | 校验日期 |
 |---|---|---|---|---|
-| [`SKILL.md`](SKILL.md)（仓库根 = `multica-wiki` skill） | `v0.3.10` | `be32e5af` | [v0.3.10](https://github.com/multica-ai/multica/releases/tag/v0.3.10) | 2026-05-28 |
+| [`SKILL.md`](SKILL.md)（仓库根 = `multica-wiki` skill） | `v0.3.11` | `063e9711` | [v0.3.11](https://github.com/multica-ai/multica/releases/tag/v0.3.11) | 2026-05-28 |
 
 `SKILL.md` 的 frontmatter 里也带 `multica_version` 字段——这张表是**索引**，frontmatter 是**单条 Skill 的真相**；两边不一致以 frontmatter 为准。
 
 ## 兼容范围承诺
 
-- **同一 minor（`v0.3.x`）**：CLI flag 一般只增不删，行为兼容。这份 Skill 在 `v0.3.10 ≤ x` 区间内默认仍可用，但建议每次升级后跑一次本文档底部"升级自检"。
+- **同一 minor（`v0.3.x`）**：CLI flag 一般只增不删，行为兼容。这份 Skill 在 `v0.3.11 ≤ x` 区间内默认仍可用，但建议每次升级后跑一次本文档底部"升级自检"。
 - **跨 minor（`v0.3.x → v0.4.0`）**：可能引入破坏性变更（flag 改名、metadata 字段移除、子命令重命名）。**不要直接套用**——先按"重新对齐流程"跑一遍。
 - **跨 major（`v0.x → v1.0`）**：默认假设全部失效，必须重抽 + 全量评测。
 
@@ -26,7 +26,7 @@ multica --version
 把输出里的 `vX.Y.Z` 跟上面表格对照：
 
 - 完全相等 → 直接用。
-- 只差 patch（例：表格 `v0.3.10`，本机 `v0.3.12`）→ 直接用，但出现"CLI 报 unknown flag / unknown command"时立刻停手，去 [release notes](https://github.com/multica-ai/multica/releases) 查变更，再回写本文件。
+- 只差 patch（例：表格 `v0.3.11`，本机 `v0.3.13`）→ 直接用，但出现"CLI 报 unknown flag / unknown command"时立刻停手，去 [release notes](https://github.com/multica-ai/multica/releases) 查变更，再回写本文件。
 - 差 minor 或更多 → 走"重新对齐流程"。
 
 ## 升级自检（跑完一次再宣布"已对齐到新版"）
@@ -64,5 +64,6 @@ multica repo checkout https://github.com/multica-ai/multica --ref v0.4.0
 | 2026-05-28 | — → `v0.3.10` | Skill 质量工程师 | 首次建立版本对齐声明（仓库已有内容此前未明示版本） | 待跑首轮评测 |
 | 2026-05-28 | `v0.3.10` 内修 | 通用智能体(Opus4.7) | 修正 `skill import` / `skill files` / `agent skills` 在 README 与 03/09 章节的命令片段（5 处漂移），与 v0.3.10 实测 `--help` 完全对齐；compatibility.md 拆出 high-risk 行 | n/a（仅命令片段对齐） |
 | 2026-05-28 | `v0.3.10` 重构 M1 | 通用智能体(Opus4.7) | 从"对象百科"向"操作指引"渐进过渡（保留 wiki 属性）：新增 `03-core-loop.md`（Agent 标准 loop）和 `07-build-an-agent.md`（新建 Agent 决策与步骤）；旧 03-cli-cheatsheet 降级 + 瘦身为 `appendix-cli.md`，仅保留 `--help` 给不出来的组合规则 / 横切约定 / 副作用警告；新 07 占用导致 07-13 整体下移到 08-14；SKILL.md 索引保持扁平 14+附录（先建立心智模型再行动），不切 Part A/B/C。COSI-31 跟踪。 | n/a（结构重构 + 新章节，未跑评测） |
+| 2026-05-28 | `v0.3.10` → `v0.3.11` | Skill 质量工程师 | 跑完"升级自检"1-2 步：逐条 `--help` 比对了 compatibility.md 全部 24 条命令（含 `skill import` / `skill files upsert` / `agent skills set` 三条历史盲点），命令拼写、子命令、flag、副作用清单与 v0.3.11 实测完全一致。仅观察到一处**纯增量**变更：`multica daemon` 多了新子命令 `disk-usage`（旧的 5 条 `start/stop/restart/status/logs` 不变）；wiki 暂不引用 `disk-usage`，按 compatibility.md 维护流程"全新子命令 → 不引用就不写进来"，本次不扩大改动范围，已在 COSI-44 评论里报告等队长裁决。frontmatter / 总览表 / README 当前对齐段一并刷到 `v0.3.11` (commit `063e9711`)。 | n/a（仅版本回写，未跑评测） |
 
 > **维护规则**：日志只追加，不删除。哪怕回滚版本，也写一行"回滚 X→Y, 原因 ..."。这样 6 个月后能复盘 Skill 质量在哪一次对齐里抖动。

@@ -12,7 +12,7 @@ multica skill import --url https://github.com/0punchman/Multica-Wiki-Skill
 
 ## 当前对齐版本
 
-**Multica CLI `v0.3.10`** · commit `be32e5af` · [Release tag](https://github.com/multica-ai/multica/releases/tag/v0.3.10) · 最近一次校验 **2026-05-28**
+**Multica CLI `v0.3.11`** · commit `063e9711` · [Release tag](https://github.com/multica-ai/multica/releases/tag/v0.3.11) · 最近一次校验 **2026-05-28**
 
 - 单 Skill 的版本声明在 [`SKILL.md`](SKILL.md) 的 `multica_version` frontmatter；
 - 整库的对齐策略 / 兼容范围 / 升级流程 / 变更日志见 [`VERSION.md`](VERSION.md)；
