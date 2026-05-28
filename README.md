@@ -1,73 +1,51 @@
-# Multica Skills（仓库定位）
+# Multica Wiki Skill
 
-> 这个仓库里的所有内容都以 **Skill** 形式组织，给在 Multica 平台上跑任务的 Agent 用。
-> 仓库当前名字仍是 `Multica_Wiki`（外链兼容），改名 `Multica_Skills` 留作后续单独 issue。
+> **本仓库就是一个 Skill 的安装地址**——把它 import 进 Multica，挂到 Agent 上，Agent 就能在 Multica 平台上正确执行任务（读 issue、写评论、派活、管 metadata、跑 task、用 squad / autopilot / skill）。
 
 ## 当前对齐的 Multica 版本
 
 **CLI `v0.3.10`** · commit `be32e5af` · [Release tag](https://github.com/multica-ai/multica/releases/tag/v0.3.10) · 最近一次校验 **2026-05-28**
 
-- 单条 Skill 的对齐声明在各自 `SKILL.md` 的 `multica_version` frontmatter；
+- Skill 自身的对齐声明在 [`SKILL.md`](SKILL.md) 的 `multica_version` frontmatter；
 - 整库的对齐策略 / 兼容范围 / 升级流程 / 变更日志见 [`VERSION.md`](VERSION.md)；
 - 按命令粒度的兼容矩阵（用于自动化 diff）见 [`compatibility.md`](compatibility.md)。
 
 跨 minor 升级（例：`v0.3.x → v0.4.0`）前**必须**先跑 [`VERSION.md` 里的"升级自检"](VERSION.md#升级自检跑完一次再宣布已对齐到新版)。
 
-## 两层结构（不可互替）
+## 安装
 
-| 层 | 触发宽度 | 作用 | 例子 |
-|---|---|---|---|
-| **通识层** | 宽（任何 Multica 相关任务都命中） | 让 Agent 在模糊场景**有自主判断的底座**——架构、对象模型、CLI、红线、生命周期 | [`skills/multica-handbook/`](skills/multica-handbook/) |
-| **剧本层** | 窄（限定到具体业务场景） | 在高风险或重复场景**约束 Agent 不要自由发挥**——只钉步骤 + CLI + 红线 + 验证 + 回滚 | [`skills/replicate-squad.md`](skills/replicate-squad.md) |
-
-剧本层的 frontmatter 会写 `assumes: multica-handbook loaded`，因此**不重复**讲对象模型——读剧本前 handbook 已经在上下文里。
-
-## 目录
-
-```
-README.md                              # 你在这——仓库定位 + 维护协议
-skills/
-  multica-handbook/                    # 通识层（一个大 skill）
-    SKILL.md                           # 入口：frontmatter + 索引 + 三条红线
-    01-architecture.md ... 13-troubleshooting.md
-    SOURCES.md                         # 上游文件 → 章节映射
-  replicate-squad.md                   # 剧本层（每篇一个独立 skill）
-  （后续按需新增）
+```bash
+multica skill import https://github.com/0punchman/Multica-Wiki-Skill
 ```
 
-## 单 skill 文件骨架
+Skill 导入到 Workspace 后还需要挂到具体 Agent 才生效（详见 [`09-skills.md`](09-skills.md)）。建议**所有 Multica Agent 都挂这条 Skill**。
 
-```markdown
----
-name: <skill-name>
-description: Use when ...               # 触发条件：handbook 写宽，剧本写窄
-outcome: ...                            # 跑完之后的可观测产物
-assumes: multica-handbook loaded        # 仅剧本层需要
----
+## 仓库结构
 
-何时用 / 何时不用
-Step 1..N（含可直接复制的 CLI 模板）
-失败回滚
-深入参考（链接到 handbook 章节）
+```
+README.md              # 你在这——仓库定位 + 安装 + 对齐版本
+SKILL.md               # Skill 入口：frontmatter + 索引 + 三条红线
+01-architecture.md     # server / daemon / AI 工具三件套
+02-entities.md         # Workspace / Issue / Comment / Task / Agent / Squad / Project
+03-cli-cheatsheet.md   # 所有顶级 multica 命令一页速查
+04-issue-lifecycle.md  # Issue 状态机、分配、子 issue 触发策略
+05-comments-and-mentions.md  # 评论是 Agent 唯一可见输出；@ 是有副作用的动作
+06-metadata.md         # 写入门槛、推荐 key、反模式
+07-tasks-and-runs.md   # Task 状态机、超时、自动重试 vs 手动 rerun
+08-projects-and-resources.md
+09-skills.md           # Skill 是什么、放哪里、第三方 Skill 风险
+10-squads.md
+11-autopilots.md
+12-providers.md
+13-troubleshooting.md
+SOURCES.md             # 上游文件 → 章节映射 + 重抽取流程
+VERSION.md             # 对齐策略 / 兼容范围 / 升级自检 / 变更日志
+compatibility.md       # 命令粒度兼容矩阵
 ```
 
 ## 维护协议
 
-1. **通识层更新**——上游 `multica-ai/multica` 文档大改时，按 `skills/multica-handbook/SOURCES.md` 的"上游文件 → 章节映射"表 patch 对应章节。不需要每次重写整章。
-2. **剧本层新增**——发现某类业务流程被多个 issue 反复踩坑，就抽成剧本。剧本必须写**步骤、CLI、红线、验证、回滚**五段，缺一不可。
-3. **不要把内容塞进 README**——索引归 `multica-handbook/SKILL.md`，剧本归各自文件，README 只讲仓库结构和维护协议。
-4. **Skill 修改后只对新 task 生效**——正在跑的 task 继续用旧版（详见 `09-skills.md`）。
-
-## 怎么把这份仓库挂到 Agent
-
-把仓库当作**多个 GitHub Skill 来源**：
-
-```bash
-# 通识层（整个目录作为一个 skill）
-multica skill import --from-github https://github.com/0punchman/Multica_Wiki/tree/main/skills/multica-handbook
-
-# 单篇剧本
-multica skill import --from-github https://github.com/0punchman/Multica_Wiki/blob/main/skills/replicate-squad.md
-```
-
-Skill 导入后必须挂到具体 Agent 才生效（`multica agent skills <slug> add --skill-id <id>`）。建议**所有 Multica Agent 都挂 `multica-handbook`**；剧本按场景挂。
+1. **内容更新**——上游 `multica-ai/multica` 文档大改时，按 [`SOURCES.md`](SOURCES.md) 的"上游文件 → 章节映射"表 patch 对应章节。不需要每次重写整章。
+2. **不要把内容塞进 README**——索引归 [`SKILL.md`](SKILL.md)，README 只讲仓库定位、安装、对齐版本。
+3. **Skill 修改后只对新 task 生效**——正在跑的 task 继续用旧版（详见 [`09-skills.md`](09-skills.md)）。
+4. **未来真出现重复使用的具体业务剧本**——单独建一个 `multica-<scenario>-skill` 仓库，不要往本仓硬塞第二个 skill；install URL 也更稳定。
