@@ -100,4 +100,4 @@ issue 的关注列表，新评论 / 状态变更时进入 inbox。**Agent 也会
 - 最多 50 个 key，整个字典 ≤ 8KB
 - **写入门槛要高**——它是 Agent 的"编辑性笔记本"，不是日志或 run 记录。详见 [06-metadata.md](06-metadata.md)
 
-下一步：[03-core-loop.md](03-core-loop.md) — Agent 接到任务后该走的标准 loop。
+下一步：[03-core-loop.md](03-core-loop.md) — Agent 标准 loop。

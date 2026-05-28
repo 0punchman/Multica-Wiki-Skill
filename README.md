@@ -34,22 +34,22 @@ README.md              # GitHub 落地页：定位、安装、对齐版本（你
 VERSION.md             # 对齐策略 / 兼容范围 / 升级自检 / 变更日志
 compatibility.md       # 命令粒度兼容矩阵（机读）
 references/            # 渐进披露式参考文档：Agent 用到再读，不会一次性塞进上下文
-  01-architecture.md            # server / daemon / AI 工具三件套（概念底座）
-  02-entities.md                # Workspace / Issue / Comment / Task / Agent / Squad / Project（概念底座）
-  03-core-loop.md               # ⭐ 操作指引：Agent 接到 issue 后的标准 loop
-  04-issue-lifecycle.md         # 名词参考
-  05-comments-and-mentions.md   # 名词参考（含三条红线之一）
-  06-metadata.md                # 名词参考
-  07-build-an-agent.md          # ⭐ 操作指引：新建一个 Agent
-  08-tasks-and-runs.md          # 名词参考
-  09-projects-and-resources.md  # 名词参考
-  10-skills.md                  # 名词参考
-  11-squads.md                  # 名词参考
-  12-autopilots.md              # 名词参考
-  13-providers.md               # 名词参考（11 款 AI 编程工具）
-  14-troubleshooting.md         # 名词参考
-  appendix-cli.md               # CLI 速查（只留组合规则/横切约定/副作用警告；flag 看 --help）
-  SOURCES.md                    # 上游文件 → 章节映射 + 重抽取流程
+  01-architecture.md     # server / daemon / AI 工具三件套
+  02-entities.md         # Workspace / Issue / Comment / Task / Agent / Squad / Project
+  03-core-loop.md        # Agent 标准 loop（取上下文 → 干活 → 评论交付 → metadata → 收尾）
+  04-issue-lifecycle.md
+  05-comments-and-mentions.md
+  06-metadata.md
+  07-build-an-agent.md   # 何时新建 vs 复用 / 决策清单 / 步骤 + 验证 / 常见翻车
+  08-tasks-and-runs.md
+  09-projects-and-resources.md
+  10-skills.md
+  11-squads.md
+  12-autopilots.md
+  13-providers.md
+  14-troubleshooting.md
+  appendix-cli.md        # CLI 横切约定（组合规则 / 副作用 flag）；完整 flag 仍走 --help
+  SOURCES.md             # 上游文件 → 章节映射 + 重抽取流程
 ```
 
 布局遵循 Anthropic Skill [官方约定](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md)——`SKILL.md` 顶层、`references/` 放渐进披露的参考文档。Agent 加载本 skill 时只需要 `SKILL.md` 进入上下文，`references/*` 在指向时再按需读，避免一次性塞 50KB 进 prompt。

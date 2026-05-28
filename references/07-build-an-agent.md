@@ -1,188 +1,154 @@
-# 07 · 新建一个 Agent
+# 07 · 创建一个 Agent
 
-> **何时读这一章**：你或用户想往工作区里加一个新角色——专门跑代码评审、跑回归测试、做项目管家、当某个 squad 的成员。
->
-> **它解决什么**：把"造一个新 Agent"拆成五个决策（要不要建 / 用谁的脑 / 跑哪台机 / 装什么 skill / 给什么纲领），每个决策给判断口诀和必备 CLI。
+> **本章是动作型指引**——什么时候新建一个 Agent、什么时候复用现成的、新建时要决定哪些字段、怎么验证它真的能干活、踩过哪些坑。
+> Agent 的对象模型在 [02-entities.md](02-entities.md)；运行时机制在 [01-architecture.md](01-architecture.md)；11 款 AI 编程工具的差异在 [13-providers.md](13-providers.md)。
 
----
+## 何时该新建一个 Agent
 
-## 第 0 步：先问"该不该建"
+Agent 是**身份 + 配置 + 挂载的 Skills**——不是"一次执行"。一次执行是 Task。新建 Agent 之前先问自己：
 
-绝大多数任务**不需要**新 Agent，给现有 Agent 派活就行。新建合理的信号：
-
-| 信号 | 应该新建 |
+| 你的场景 | 应该 |
 |---|---|
-| 这条任务**会反复出现**（每周 / 每条 PR / 每次发版） | ✅ |
-| 这条任务**用现有 Agent 已经跑过 ≥3 次**，每次都同一套指令 | ✅ |
-| 同一类活有**自己专属的**红线 / 风格 / SOP，跟通用 Agent 不重叠 | ✅ |
-| 想让它能**被工作区其它人单独 `@` 触发**，而不是混在通用 Agent 后面 | ✅ |
-| 一次性任务、好奇试一下、没有重复证据 | ❌ → 派给现有 Agent |
-| 只是想换个名字 / 头像 | ❌ → 改现有 Agent，不要重复造 |
+| 已有 Agent 能干、只是想让它做一次 | **复用**——分配 issue 或 `@` 它，不新建 |
+| 需要不同的**指令集**（不同的 system prompt / persona） | 新建 |
+| 需要不同的**模型 / 工具**（如团队默认 Claude，这个任务要 Codex） | 新建（绑定不同 Runtime） |
+| 需要不同的**Skill 组合**（一个 reviewer-only、一个 fullstack） | 新建（一个 Agent 一组 skill 设定） |
+| 需要不同的**可见性**（敏感任务限 owner/admin 调度） | 新建（`--visibility private`） |
+| 同一个人想跑多个并发会话 | **不需要新建**——同一 Agent 在不同 issue 上天然并发；同 issue 同 Agent 数据库强制 1 条活跃 task |
 
-**反模式**：建一个 "Big Agent" 把所有职责塞一起，靠 instructions 自己分工——会让 instruction 变长、模型走偏、`@` 不准。**职责单一**比"多功能"重要。
+> 经验法则：**身份/指令/工具/可见性有任何一项不同 → 新建。否则复用。** 用大量"近亲" Agent 互相 `@` 来拼工作流是反模式——优先用 Squad（[11-squads.md](11-squads.md)）或子 issue（[04-issue-lifecycle.md](04-issue-lifecycle.md)）拼。
 
----
-
-## 第 1 步：五个决策
-
-按这个顺序拍：**Provider → Runtime → Visibility → Model → Skills + Instructions**。
-
-### 决策 1：Provider（用哪款 AI 编程工具的脑）
-
-11 款 provider 详细对照见 [13-providers.md](13-providers.md)。**新用户首选 `claude_code`**——功能最完整、会话恢复真用、唯一真消费 MCP。
-
-挑选口诀：
-
-| 你的需求 | 推荐 | 不推荐 |
-|---|---|---|
-| 不知道选啥、想要功能最全 | `claude_code` | — |
-| 失败重试要接着上次上下文跑 | `claude_code` / `copilot` / `kimi` / `kiro_cli` / `opencode` / `openclaw` / `pi` / `hermes` | `codex`（resume 不可达）/ `cursor`（同）/ `gemini`（无） |
-| 要用 MCP server | `claude_code`（**唯一真用**） | 其它 10 款都会**忽略** `mcp_config` |
-| 想用 GPT 系列模型 | `codex` | — |
-| 用 Gemini | `gemini`（注意：无 resume，不适合长链路重试） | — |
-
-> ⚠️ **MCP 陷阱**：在非 `claude_code` 的 Agent 上配 `mcp_config`，daemon **接受但不报错**——配置就是不生效。装 MCP 之前先确认 provider。
-
-### 决策 2：Runtime（在哪台 daemon 上跑）
-
-Runtime = 一台运行 Multica daemon 的机器，承载实际的 AI 工具进程。
+### 复用时怎么找到现成的 Agent
 
 ```bash
-multica runtime list --output json
+multica agent list --output json
+multica agent get <slug>
+multica agent skills list <slug>     # 看挂的 skill 清单决定能不能干
 ```
 
-这条返回一组 daemon。挑选时看：
+确认它的 `runtime_id` 对应的 Runtime 在线（`multica runtime list --output json` 看 `status: online`），不在线分配过去也只能排队。
 
-- **`provider`** 字段——和你刚选的 Provider 必须匹配（`claude_code` 必须挑 `provider: "claude"` 的 runtime）。
-- **`status: online`**——挑离线的等于扔进黑洞。
-- **`visibility`**——`private` 是个人 daemon、`workspace` 是团队共享。
-- **`metadata.cli_version`**——和当前对齐版本（见 `VERSION.md`）匹配，避免命令行为差异。
+## 决策清单（新建之前定好这 6 件事）
 
-记下要用的 runtime 的 **`id`**（UUID）。
+| 决策 | 选项 | 怎么挑 |
+|---|---|---|
+| **Provider / 工具** | Claude Code / Codex / Copilot / Cursor / Gemini / Hermes / Kimi / Kiro CLI / OpenCode / OpenClaw / Pi | 看 [13-providers.md](13-providers.md)。**默认 Claude Code**：会话恢复真用、是 11 款里**唯一真消费 MCP** 的。需要 Gemini/Codex 才考虑别的。 |
+| **Runtime** | 工作区里某个 `online` 的 runtime ID | `multica runtime list --output json` 选状态 `online` 的。Runtime = daemon × 工具，离线则任务排队，超时失败。 |
+| **Model** | 静态，如 `claude-opus-4-7` / `claude-sonnet-4-6`；空 = runtime 默认 | 偏好 `--model` 这个 flag，**不要**塞到 `--custom-args`（codex / openclaw 会拒）。 |
+| **Skills** | 一组 skill ID（**全量替换**，详见 [10-skills.md](10-skills.md)） | 至少把 multica-wiki 这种"通识 skill"挂上；任务专长 skill 按需追加 |
+| **Instructions** | 一段 markdown，描述这个 Agent 的人格 / 边界 / 风格 | 写"任务边界 + 红线 + 收尾要求"；不要重写 wiki 里的通识——交叉引用即可 |
+| **Visibility** | `private`（默认）/ `workspace` | 普通团队工具用 `workspace`；触敏感数据 / 需要 owner-only 触发的用 `private` |
 
-### 决策 3：Visibility（谁能分配它）
+> ⚠️ **Skill 挂载是全量替换**：`multica agent skills set <slug> --skill-ids a,b,c` 会**覆盖**当前所有挂载——只想加一个，先 `list` 拿到现有 ID，自己拼好新列表再 `set`。否则会**意外卸掉别的 skill**。
 
-| 值 | 谁能分配它 | 谁能看见它 | 用在哪 |
-|---|---|---|---|
-| `workspace`（默认推荐） | 任何工作区成员 | 所有人 | 团队共享角色（代码审查、回归测试） |
-| `private` | 只有 owner / admin / 创建者 | 名字可见、配置遮蔽 | 实验性 Agent、个人脚本工具 |
+## 步骤 + 必备 CLI
 
-注意：`private` Agent 的**名字**对所有成员可见，只是配置被遮蔽——不要把"对外不可见"指望在这里。
-
-### 决策 4：Model（具体哪个模型）
-
-`--model` 传的是模型 ID（例 `claude-opus-4-7`、`claude-sonnet-4-6`、`gpt-5-codex`）。**优先用 `--model` 而不是把它塞进 `--custom-args`**——某些 provider（codex app-server、openclaw）会拒绝 `custom_args` 里的 `--model`。
-
-不传 `--model` 就走 runtime 的默认模型，多数情况下够用。明显需要更强 / 更快 / 更便宜模型时再显式传。
-
-### 决策 5：Skills + Instructions（给它什么知识、什么纲领）
-
-两件不同的事：
-
-- **Skills**——可被多个 Agent 共享的"专业知识包"（一个 `SKILL.md` + 资料）。详见 [10-skills.md](10-skills.md)。
-- **Instructions**——只属于这一个 Agent 的"工作纲领"，写它的身份、目标、边界、禁止事项。
-
-经验法则：
-
-- 通用红线、CLI 用法、对象模型 → **挂 skill**（这条 wiki 就是这种 skill）。
-- 这个 Agent 独有的角色 / 风格 / 口吻 / KPI → **写 instructions**。
-- Skill 是"可复用，宽触发"；instructions 是"绑死这个 Agent，永远在线"。
-
-> ⚠️ **`agent skills set` 是全量替换不是增量**——后续给已有 Agent 加 skill 时，先 `agent skills list` 拿现有 skill_ids，再 `set` 上"原列表 + 新 id"。直接 `set --skill-ids 新id` 会**意外把别的 skill 全部卸掉**。
-
----
-
-## 第 2 步：执行——四条命令
+### 1. 选 Runtime
 
 ```bash
-# (1) 选好 runtime（决策 2）
 multica runtime list --output json
-# 记下 id，下面记为 RUNTIME_ID
+# 看 provider、status、device_info 选一个 status:"online" 的，记 id
+```
 
-# (2) 创建 Agent
+### 2. 列 Skills（先把要挂的找好）
+
+```bash
+multica skill list --output json
+# 没现成的 skill 包：要么不挂，要么先 multica skill import --url <github/clawhub/skills.sh URL>
+```
+
+### 3. 创建 Agent
+
+```bash
 multica agent create \
-  --name        "代码评审专家" \
-  --description "针对 PR 做严谨技术评审" \
-  --instructions "你是一名资深工程师，对每个 PR 给出至少 3 个具体可执行的改进建议；不空泛、不情绪化；引用代码行号..." \
-  --runtime-id  $RUNTIME_ID \
-  --model       claude-opus-4-7 \
-  --visibility  workspace \
-  --max-concurrent-tasks 4 \
-  --output      json
-# 输出里记下新 agent 的 id（UUID），下面记为 AGENT_ID
-
-# (3) 挂 skill —— 全量替换语义，先 list 再 set
-multica skill list --output json     # 找到要挂的 skill 的 id
-multica agent skills set $AGENT_ID --skill-ids <skill-id-1>,<skill-id-2>
-
-# （可选）传 secret 类的 env 变量，避免 shell history
-echo '{"OPENAI_API_KEY":"sk-..."}' | multica agent update $AGENT_ID --custom-env-stdin
+  --name "Code Reviewer (Opus)" \
+  --description "Reviews PRs against project conventions, posts inline + summary." \
+  --runtime-id <runtime-uuid> \
+  --model "claude-opus-4-7" \
+  --visibility workspace \
+  --instructions "$(cat ./instructions.md)" \
+  --output json
+# 输出里记下新 agent 的 id 和 slug
 ```
 
-> 💡 **从模板开种子**——`multica agent create --from-template <slug>` 可以从内置模板（如 `code-reviewer`）继承一组合理默认值，再用 `--instructions` 覆盖。模板 slug 列表通过 server 的 `/api/agent-templates` 端点查。
+可选 flag：
 
----
+- `--from-template <slug>`——从内置模板（`code-reviewer` 等）seed
+- `--max-concurrent-tasks <N>`——同时跑几个 task，默认 6
+- `--custom-args '["--max-turns","50"]'`——以 JSON 数组传额外 CLI 参数
+- `--custom-env-stdin` / `--custom-env-file`——传敏感环境变量。**不要用 `--custom-env`** 直接传值，会进 shell history / `ps`。
+- `--runtime-config '{"...":"..."}'`——runtime 级配置（少用）
 
-## 第 3 步：验证（必跑）
-
-新建完**不要直接放生产**——派一条试用 issue 跑一次，看它是不是按预期工作。
+### 4. 挂 Skills（创建后单独走一次）
 
 ```bash
-# 1. 创建一条试用 issue
-multica issue create \
-  --title       "[smoke] 新 Agent 试用" \
-  --description "请按你的 instructions 自我介绍一下，然后引用 [03-core-loop.md](...) 描述你接到任务后会怎么走。" \
-  --assignee-id $AGENT_ID \
-  --status      todo \
-  --output      json
-# 记下新 issue 的 id
-
-# 2. 等 30s-2min 后看它是否触发并产出评论
-multica issue get          <issue-id> --output json | grep -E 'status|updated_at'
-multica issue comment list <issue-id> --output json
-multica issue runs         <issue-id> --output json    # 看 task 状态
+multica agent skills set <agent-slug> --skill-ids <id1>,<id2>,<id3>
+multica agent skills list <agent-slug>     # 验证挂上了
 ```
 
-通过标准：
+### 5. 设 avatar / 环境（可选）
 
-- ✅ Task 状态从 `queued` 走到 `completed`（不是 `failed`）。
-- ✅ Issue 进了 `in_progress` 然后 `in_review`（说明它会切状态）。
-- ✅ 评论里出现了它**按 instructions 写的**自我介绍（不是模型默认回答）。
-- ✅ 没有 `@` 别的 Agent 收尾（无意识踩循环红线）。
+```bash
+multica agent avatar  <slug> --file ./avatar.png
+multica agent env     <slug> --get
+multica agent env     <slug> --set KEY=value     # 见 multica agent env --help（写入会被审计）
+```
 
-任意一条 ❌ → 回去改 instructions 或 skills，**不要**直接派真任务。
+### 6. 验证：分一个简单 issue 试一次
 
----
+```bash
+# 建一个最小测试 issue 分给新 Agent
+multica issue create \
+  --title "Smoke test for new Agent" \
+  --description "回一条评论，说你能看到这条 issue 的描述。" \
+  --assignee-id <new-agent-uuid> \
+  --status todo
 
-## 第 4 步：必读的"全量替换"陷阱清单
+# 几秒内 Runtime 应该领走任务
+multica issue runs <issue-id> --output json
+multica issue run-messages <task-id> --issue <issue-id> --output json     # 看消息流
+```
 
-| 命令 | 副作用 | 怎么躲 |
-|---|---|---|
-| `multica agent skills set <id> --skill-ids X,Y` | **全量替换** Agent 当前挂载 | 先 `agent skills list` 取并集再 set |
-| `multica agent update <id> --instructions "..."` | 整体替换，**没有 patch** | 先 `agent get` 拿到现有，本地拼新版再 update |
-| `multica agent update <id> --custom-env '{"K":"V"}'` | 整体替换 env map | 同上；secret 用 `--custom-env-stdin` 或 `--custom-env-file` |
-| `multica agent archive <slug>` | 软删 | 想恢复 → `multica agent restore <slug>` |
-| 新版 skill 推送 | 只对**新创建**的 task 生效，**正在跑**的 task 用旧版 | 改 skill 后，**不要** rerun 期待新版生效——要等新触发 |
+**通过条件**：
 
----
+- `multica issue runs` 里出现一条 `running` 或 `completed` 的 task
+- 该 task 完成后，issue 上多了一条由新 Agent 发出的评论（`multica issue comment list`）
+- issue status 被推到了 `in_review`
+
+任何一条不满足都说明 Agent 没正常起来，进"常见翻车"。
 
 ## 常见翻车
 
-1. **挑错 provider 装 MCP**——在 `codex` / `cursor` / `gemini` 等 Agent 上配 `mcp_config`，配置静默失效，`@` 它跑出来的结果一脸问号。**装 MCP 前 100% 确认 provider 是 `claude_code`**。
-2. **`agent skills set` 把别的 skill 弄丢**——只 `set` 了新 skill_id，没把原来的并进去。常见后果：原本依赖工作区基础 skill 的工作流全部失灵。
-3. **runtime 挑了离线的**——任务永远停在 `queued`。第一次创建后用 `multica issue runs <issue-id>` 看状态，超过 5 分钟还在 `queued` 八成是 runtime offline 或 provider mismatch。
-4. **Instructions 太长 / 太散**——把 wiki 内容、CLI 规则、风格指南全塞进 instructions。这些应该挂 **skill**，instructions 只写"这一个 Agent 的角色 / 风格"。
-5. **跳过验证步骤**——直接把新 Agent 派进真实工作流。最安全是先发 1 条 smoke issue，验证完再放生产。
-6. **私有 Agent 当成"对外不可见"**——名字其实对所有成员可见。如果真要保密某个角色的存在，**它就不该是工作区 Agent**。
+| 翻车 | 原因 | 修法 |
+|---|---|---|
+| `agent create` 报 `runtime not found` | `--runtime-id` 给错了 / 那个 runtime 不在当前 workspace | 重新 `multica runtime list --output json` 选当前 ws 的 |
+| 分配后 5 分钟没动静、task 超时 | Runtime 在 list 里看着 online 但实际不能领（守护进程挂了） | `multica daemon status` / `daemon logs -f` 在那台机器上查 |
+| 任务跑起来了但 Agent "看不到" skill | Skill 没用 `agent skills set` 挂；或挂了一组但被后续 set 覆盖了 | `agent skills list` 验证；增量挂载先 list 再 set |
+| `skill files upsert` 想上传大文件失败 | `--content` 走命令行，长度有限 | 用 shell heredoc 或外部脚本拼内容；GitHub 单文件上限 ~1 MB |
+| MCP 配置不生效 | 选了 Claude Code 之外的工具——其它 10 款**忽略** `mcp_config` | 真要 MCP 就用 Claude Code，否则不要依赖 |
+| 修了 skill 内容、新 task 还是旧版 | Skill 修改**只对之后新建的 task** 生效 | 重发一条 issue 评论 / 重新分配触发新 task |
+| `--model` 写到 `--custom-args` 里 | codex app-server / openclaw **会拒** | 用顶层 `--model` flag |
+| 私人 Agent 名字仍能被看到 | 私人 Agent 只是隐藏配置详情、**名字仍然全员可见** | 真要彻底不可见的能力，重新设计 |
+| skill import 用 `--from-github` | v0.3.10 已经合并成单一 `--url`，URL 来源自动识别 | `multica skill import --url <URL>` |
+| `agent skills` 想 add / remove | v0.3.10 只有 `list` / `set` | `set` 全量替换；增量自己拼 |
 
----
+## 把它接进工作流
 
-## 链回
+新 Agent 起来之后，常见接法：
 
-- [02-entities.md](02-entities.md) — Agent / Member / Squad 对象差异（Agent 不收 inbox 通知 vs Member 收）
-- [10-skills.md](10-skills.md) — Skill 是什么、怎么导入、怎么挂载、本机 vs 工作区
-- [13-providers.md](13-providers.md) — 11 款 provider 的能力矩阵和坑位
-- [appendix-cli.md](appendix-cli.md) — `agent` / `skill` / `runtime` 命令的 flag 速查
-- [03-core-loop.md](03-core-loop.md) — 新 Agent 跑起来后该走的标准 loop（验证步骤里就是用它跑 smoke）
+1. **直接分配 issue**——四种触发里最重的，详见 [04-issue-lifecycle.md](04-issue-lifecycle.md)。
+2. **评论里 `@` 它**——不改 assignee，独立入队 task。慎用：和现有 Agent 互 `@` 是死循环高发地。详见 [05-comments-and-mentions.md](05-comments-and-mentions.md)。
+3. **加进 Squad**——做小队成员，由队长 Agent 路由分派。详见 [11-squads.md](11-squads.md)。
+4. **Autopilot 触发**——cron / webhook 周期性触发它。**不会自动重试**。详见 [12-autopilots.md](12-autopilots.md)。
 
-下一步：[08-tasks-and-runs.md](08-tasks-and-runs.md) — Agent 跑起来之后，每次执行的 Task 状态机。
+## 不在这一章里的细节
+
+| 想查什么 | 去哪一章 |
+|---|---|
+| Skill 怎么写 / 导入 / 挂载顺序 / 风险 | [10-skills.md](10-skills.md) |
+| 11 款工具的细节差异 / 会话恢复 / MCP | [13-providers.md](13-providers.md) |
+| Task 状态机 / 失败重试 / resume | [08-tasks-and-runs.md](08-tasks-and-runs.md) |
+| `@` 一个 Agent 的副作用 | [05-comments-and-mentions.md](05-comments-and-mentions.md) |
+| `agent` 命令完整 flag | `multica agent <subcommand> --help` |
+
+下一步：[08-tasks-and-runs.md](08-tasks-and-runs.md) — task 状态机和重试规则。

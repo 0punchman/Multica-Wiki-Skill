@@ -63,6 +63,6 @@ multica repo checkout https://github.com/multica-ai/multica --ref v0.4.0
 |---|---|---|---|---|
 | 2026-05-28 | — → `v0.3.10` | Skill 质量工程师 | 首次建立版本对齐声明（仓库已有内容此前未明示版本） | 待跑首轮评测 |
 | 2026-05-28 | `v0.3.10` 内修 | 通用智能体(Opus4.7) | 修正 `skill import` / `skill files` / `agent skills` 在 README 与 03/09 章节的命令片段（5 处漂移），与 v0.3.10 实测 `--help` 完全对齐；compatibility.md 拆出 high-risk 行 | n/a（仅命令片段对齐） |
-| 2026-05-28 | `v0.3.10` 重构 M1 | 通用智能体(Opus4.7) | 从"对象百科"向"操作指引"过渡：新增 `03-core-loop.md`（Agent 标准 loop）和 `07-build-an-agent.md`（新建 Agent 决策与步骤）；旧 03-cli-cheatsheet 降级 + 瘦身为 `appendix-cli.md`，仅保留组合规则 / 横切约定 / 副作用警告；现 03/07 占用导致 07-13 整体下移到 08-14；SKILL.md 索引按"概念底座 / 操作指引 / 名词参考 / 附录"四段重组。COSI-31 跟踪。 | n/a（结构重构 + 新章节，未跑评测） |
+| 2026-05-28 | `v0.3.10` 重构 M1 | 通用智能体(Opus4.7) | 从"对象百科"向"操作指引"渐进过渡（保留 wiki 属性）：新增 `03-core-loop.md`（Agent 标准 loop）和 `07-build-an-agent.md`（新建 Agent 决策与步骤）；旧 03-cli-cheatsheet 降级 + 瘦身为 `appendix-cli.md`，仅保留 `--help` 给不出来的组合规则 / 横切约定 / 副作用警告；新 07 占用导致 07-13 整体下移到 08-14；SKILL.md 索引保持扁平 14+附录（先建立心智模型再行动），不切 Part A/B/C。COSI-31 跟踪。 | n/a（结构重构 + 新章节，未跑评测） |
 
 > **维护规则**：日志只追加，不删除。哪怕回滚版本，也写一行"回滚 X→Y, 原因 ..."。这样 6 个月后能复盘 Skill 质量在哪一次对齐里抖动。

@@ -1,156 +1,150 @@
-# 03 · Agent 标准循环（Core Loop）
+# 03 · Agent 标准 Loop
 
-> **何时读这一章**：你被分配到一条 issue（或者被 `@` / autopilot 触发）开始干活的那一瞬间。
->
-> **它解决什么**：从"任务到了"到"用户能看到结果"之间，需要按固定顺序串起来的几条 CLI——这部分 `multica X --help` 不会告诉你，因为 `--help` 只讲单条命令。
+> **每个被 Multica 触发的 Agent，每次执行都要走这一套循环。**
+> 这是 Agent 的"使用说明书"——什么时候做什么、用哪条 CLI、怎么验证、容易在哪里翻车。其他章节只在需要细节时回查。
+
+## 何时跑这套 loop
+
+只要你被以下四种方式之一触发，立刻进入这套 loop：
+
+| 触发 | 你应该做的第一件事 |
+|---|---|
+| 被分配 issue（assignee 改成你） | 完整 loop |
+| 评论里被 `@` 提及 | 完整 loop（issue 状态可能不用切——你不是 assignee） |
+| 聊天（chat） | 跳过 issue / metadata / status 部分，只走"读上下文 → 干活 → 评论交付（在聊天里）" |
+| Autopilot 触发 | 按 autopilot 自定的入口走，loop 仍然适用，但**不会自动重试**——见 [12-autopilots.md](12-autopilots.md) |
+
+下面以最常见的"被分配 issue"为例完整走一遍。其它触发方式只是改其中一两步。
+
+## 五步 Loop
 
 ```
-取上下文 ─→ 切状态 ─→ 干活 ─→ 评论交付 ─→ metadata（可选）─→ 收尾状态
+┌─────────────────────────────────────────────────────────┐
+│ 1. 取上下文：issue + metadata + comments                │
+│ 2. 切状态：status → in_progress                          │
+│ 3. 干活                                                  │
+│ 4. 交付：comment add  +（必要时）metadata set/delete      │
+│ 5. 收尾：status → in_review / blocked                    │
+└─────────────────────────────────────────────────────────┘
 ```
 
-每一步省略了都会出问题：跳过 1 等于在过期信息上动手；跳过 2 用户看不到你在跑；跳过 4 你做的事**对用户不存在**；跳过 6 issue 永远停在 `in_progress`。
-
----
-
-## 1. 取上下文（必做）
+### 步骤 1 · 取上下文（必读）
 
 ```bash
-multica issue get        <id> --output json
-multica issue metadata list <id> --output json    # 看前几轮 Agent 钉了什么
-multica issue comment list  <id> --output json    # 默认全量、上限 2000
+multica issue get <id> --output json
+multica issue metadata list <id> --output json
+multica issue comment list <id> --output json
 ```
 
-三件都要做——光读 description 经常漏掉关键信息（"上一轮 Agent 试过 X 已失败"、"实际仓库换成 Y 了"、"用户在评论里改了需求"）。
+**这一步是强制的，不是可选的。**
 
-**评论太多读不完时**——别跳过，分页读：
+- **issue body 不是全部**——分配的真实意图、上一个 Agent 的发现、为什么这条 issue 重新派给你，都常常埋在评论里。跳过 `comment list` 是 Agent 行动在过期信息上的头号原因。
+- **metadata 是提示，不是真理**。空 `{}` 是正常的，CLI 失败也别停。如果它说 `pipeline_status=waiting_review` 但你刚发现 PR 已经 merge——以**当前事实**为准，并在收尾时把 stale 的 key 更新或删掉。
+- **评论太长读不完时**怎么办：
 
-```bash
-multica issue comment list <id> --recent 20 --output json
-# stderr 末尾会打 "Next thread cursor: ..."，复制粘贴翻更早的 thread：
-multica issue comment list <id> --recent 20 --before <ts> --before-id <root-id> --output json
-```
+  ```bash
+  multica issue comment list <id> --recent 20 --output json
+  # 翻更早的 thread：从 stderr 的 "Next thread cursor: ..." 复制游标
+  multica issue comment list <id> --recent 20 \
+        --before <ts> --before-id <root-id> --output json
+  ```
 
-`--recent N` 不是"少读"——它是把 timeline 按 thread 切开后**分页读全**。直到读到的内容足够让你下手为止。
+  `--recent` 是**分页读完**全量评论的方式，不是"读最近 20 条就够了"的快捷方式。
 
----
+详细：[04-issue-lifecycle.md](04-issue-lifecycle.md)、[05-comments-and-mentions.md](05-comments-and-mentions.md)、[06-metadata.md](06-metadata.md)。
 
-## 2. 切状态：`in_progress`
+### 步骤 2 · 切状态到 `in_progress`
 
 ```bash
 multica issue status <id> in_progress
 ```
 
-这一步**对用户可见**——issue 在前端会从 `todo` 变成 `in_progress`，他们就知道你在跑。少了这一步，用户会以为没人接。
+- 你是 assignee 时切。被 `@` 提及但不是 assignee 时**别动**别人的 status——你不是接管。
+- Backlog 的 issue 即便分配给你也**不会**自动入队 task；只有切到 `todo` 才会真正触发。但你被分配触发时它已经被切到 `todo` 或 `in_progress` 了，这一步只是显式记录"我在干"。
 
----
+### 步骤 3 · 干活
 
-## 3. 干活
+写代码、看仓库、跑测试、查文档——和 Multica 无关的这部分由你的具体 Skill 决定。
 
-这一段和 Multica **无关**。该读代码就读代码、该跑测试就跑测试、该 `multica repo checkout` 就 checkout。`repo checkout` 自带 git worktree，分到独立分支，跑完不影响主分支。
+涉及到 Multica 的几条规则：
 
-期间允许的中间汇报：如果任务由真人 `@` 触发、并且要花的时间长，可以发**极简**评论汇报进度（一句话，**不带 mention**）。否则保持安静。
+- **要读文件 / 仓库**：用 `multica repo checkout <url> [--ref ...]`，**不要** `git clone` 项目仓 URL。`repo checkout` 自动建 worktree、切独立分支。
+- **要读附件**：用 `multica attachment download <id>`，**不要** `curl` 资源 URL（401/403）。
+- **CLI 没覆盖你需要的操作时**：不要绕过——发评论 `@` 工作区 owner 报需求。详见 [03 红线](#红线复习一眼).
 
----
+### 步骤 4 · 交付结果（这一步最容易掉链子）
 
-## 4. 评论交付（必做——这是用户唯一看得到你的地方）
-
-> ⚠️ 你打到 stdout / 终端 / run log 的内容，**用户看不到**。结果只通过 `multica issue comment add` 才能交付。
+> ⚠️ **用户看不到你打到 stdout / 终端 / run log 的内容。**
+> 任务结果**只通过** `multica issue comment add` 才能交付。终端里写得再漂亮也等于没交付。
 
 ```bash
-multica issue comment add <id> --content "Fixed the login redirect. PR: https://..."
-multica issue comment add <id> --content-stdin                 # 长文本走 stdin，避开 shell quoting
-multica issue comment add <id> --content-file <path>           # 长文本走文件，更稳
-multica issue comment add <id> --parent <comment-id> --content "..."   # 嵌套到讨论 thread
-multica issue comment add <id> --attachment <path>             # 带附件，可重复
+# 简短结果——最常见的形态
+multica issue comment add <id> --content "Fixed the login redirect. PR: https://github.com/.../pull/482"
+
+# 长文本走 stdin / 文件，避免 shell quoting 噩梦
+multica issue comment add <id> --content-stdin <<'EOF'
+## 结果
+... 多行 markdown ...
+EOF
+
+multica issue comment add <id> --content-file ./report.md
 ```
 
-**怎么写**——简洁、自然语言、说结果不说过程：
+**评论该写什么**：结论、PR 链接、验证证据。简洁、自然——人在看。**不要**把"我读了 issue → 找到 bug → 切了分支" 这种过程当结果写。runs 历史已经存了过程。
 
-| 好 | 不好 |
-|---|---|
-| `Fixed the login redirect. PR: https://...` | `1. Read the issue 2. Found the bug in auth.go 3. ...` |
-| `复审通过，4 个 medium 缺陷已修，1 个 high 待确认。详细 sub-issue: ...` | `## Step 1: I checked the README ## Step 2: I ran the tests ...` |
+**Metadata 写不写**：默认不写。两条都满足才写：(a) 这条 key 对 issue 进展物质重要，(b) 后续 task 很可能反复读它。能想到的就 `pr_url`、`deploy_url`、`waiting_on`、`blocked_reason`、`decision` 这几个。说不出"以后谁会读、读来干嘛"——**不写**。详见 [06-metadata.md](06-metadata.md)。
 
-**`@` 的副作用**——`@Agent` / `@Member` 是**有副作用的动作**（触发对方运行 / 给真人推通知），不是格式化。详见 [05-comments-and-mentions.md](05-comments-and-mentions.md) 的"三条红线"。
-
-**回复另一个 Agent 时默认不要 `@` 它**——你的评论它本来就能看到；再 `@` 一次会让它再跑，构成循环。
-
----
-
-## 5. Metadata（**可选，默认不写**）
-
-进入这一步前先问一句：**这一轮真的产出了一条"未来在这条同一 issue 上跑的 Agent 会反复读"的事实吗？**
-
-- ✅ 是 → `multica issue metadata set <id> --key pr_url --value https://...`
-- ❌ 不是 → 跳过这一步
-
-绝大多数 run **写零条** metadata，这是预期，不是漏做。详细写入门槛与推荐 key 见 [06-metadata.md](06-metadata.md)。
-
-如果入口时读到一条已经过期的 key（例如 `pipeline_status=waiting_review` 但 PR 已经 merge）：覆盖或删除，不要让它烂在那。
+进场时看到的 metadata 现在已经 stale？**离开前必须**更新或删掉，哪怕这次没新增 key：
 
 ```bash
 multica issue metadata set    <id> --key pipeline_status --value merged
 multica issue metadata delete <id> --key pipeline_status
 ```
 
----
-
-## 6. 收尾状态（必做）
+### 步骤 5 · 收尾
 
 ```bash
-multica issue status <id> in_review     # 完成、等审
-multica issue status <id> blocked       # 被卡住——必须配一条解释评论说明卡在哪、需要谁配合
-multica issue status <id> done          # （通常审完才进 done，由审的人或下一个 Agent 切）
+multica issue status <id> in_review     # 干完了
+multica issue status <id> blocked       # 卡住了——必须配合一条说明评论
 ```
 
-少了这一步 = issue 永远停在 `in_progress`，前端看不出你跑完了。
+- `in_review` ≠ `done`。Agent 习惯做完切到 `in_review` 让人确认；只有人/规则确定通过才切 `done`。
+- 卡住时**必须**先发评论说明卡在哪、需要谁配合，再切 `blocked`。光切状态不留言 = 没交付。
+- 失败的 task 如果没自动重试成功，平台会把 status 自动从 `in_progress` 退回 `todo`——你不用手动改。
 
----
+## 红线复习（一眼）
 
-## 横切约定（所有命令都要记得）
+每次 loop 开始之前心里默念：
 
-| 约定 | 说明 |
-|---|---|
-| `--output json` | 几乎所有 list / get 命令都支持。**永远优先用**——table 格式给人看，json 给 Agent 看。**不要解析 table 输出**。 |
-| ID vs KEY | `multica issue get` / `update` / `status` 都接受 `MUL-123` 这种 KEY 或完整 UUID。Issue 之间互引用建议用 KEY，更稳定可读。 |
-| `--full-id` | list 类命令默认显示 UUID 短前缀，需要原始 UUID 时加 `--full-id`。 |
-| 默认工作区 | 大多数命令默认走 profile 里的当前工作区。跨工作区时显式传 `--workspace-id` 或设 `MULTICA_WORKSPACE_ID`。 |
-| `--metadata k=v` 过滤 | 在 `multica issue list` 里过滤；多个 `--metadata` 是 AND；值会被 JSON 解析（`true`/`false` → bool，纯数字 → number，其它 → string）。详见 [appendix-cli.md](appendix-cli.md)。 |
-| 评论分页游标 | `--before` / `--before-id` 在 `--recent` 模式下走 thread 游标，在 `--thread --tail` 模式下走 reply 游标。stderr 会打 `Next thread cursor` 或 `Next reply cursor`——直接复制粘贴。 |
-
----
-
-## 副作用与"全量替换"陷阱
-
-> 这些操作 `--help` 里**有写**，但你在事故现场再看 `--help` 已经晚了。集中前置过一遍。
-
-| 命令 | 是什么副作用 | 解读 |
-|---|---|---|
-| `multica issue rerun <id>` | **全新会话**，不续接上次上下文 | 想接着上次跑，不要 rerun；把上下文写进新评论再分配。 |
-| `multica agent skills set <agent-id> --skill-ids a,b,c` | **全量替换**（不是增量加） | 想"加一条" skill，先 `agent skills list` 拿现有列表，再 `set` 上原来全部 + 新的。 |
-| `multica skill files upsert` | upsert 同名 path 会覆盖，无 diff 提示 | 改完看一眼 `skill files list`。 |
-| `multica config set workspace_id <id>` | **不做权限校验** | 优先用 `multica workspace switch <id>`——switch 会校验。 |
-| `multica squad delete <id>` | 软删除，原本分配给小队的 issue 自动转给队长 | 如果队长不该接，先把那些 issue 重新分配再 delete。 |
-| 编辑评论里事后加的 `@` | **不会**重新触发 | 想触发对方，必须发**新**评论里写 `@`。 |
-
----
+1. **CLI 是唯一通道**——任何 Multica 资源不要用 `curl` / `wget` 直接打。详见 [05](05-comments-and-mentions.md)、[appendix-cli.md](appendix-cli.md)。
+2. **结果走 comment add**——stdout 里写啥用户都看不到。
+3. **不要 `@` 回 Agent 收尾**——"完成"、"不客气" 配上 `@对方` 是死循环，每次循环都烧用户的钱。详见 [05](05-comments-and-mentions.md)。
 
 ## 常见翻车
 
-1. **跳过读 comments**——只读 description 就动手。最高频的事故来源；上一轮 Agent 的发现、用户的更正、相关讨论都在评论里。
-2. **用 stdout 当结果**——任务跑完了，但没 `multica issue comment add`。从用户视角，这次任务**没有发生**。
-3. **shell quoting 把长 markdown 弄坏**——直接 `--content "...大段引号嵌套..."` 容易翻车。长内容用 `--content-stdin` 或 `--content-file <path>`。
-4. **回复 Agent 时带了 `@`**——立刻进入循环。即便对方礼貌回了"感谢"，因为你那条带了 `@`，对方又会跑一次再 `@` 你。
-5. **issue 状态不切**——干完没切 `in_review`，issue 卡在 `in_progress`，下一次 list 还会看到，前端也不知道你已交付。
-6. **metadata 当日志写**——把"我今天检查了 X、Y、Z"写进 metadata。那是评论的活；metadata 是高价值钉子（pr_url、deploy_url、blocker），不是 run log。
+| 翻车 | 原因 | 修法 |
+|---|---|---|
+| 用户看不到结果 | 只写在终端 / run log，没 `comment add` | 任何"结果"必须经 `comment add` |
+| 在错的 issue 上工作 | `multica issue get` 读的不是当前任务的 ID | 用 runtime 注入的那个 issue ID，不要凭记忆/缓存 |
+| 行动在 stale 信息上 | 跳过 `comment list` 直接看 description | `comment list` 是强制步骤，不是可选 |
+| metadata 烂掉 | 进场看到 stale key 不清理，离开前不更新 | 离开前 stale key 必须更新或 `delete` |
+| 触发同伴 Agent 死循环 | 收尾评论里 `@` 回另一个 Agent | 收尾时**默认不 `@`**——沉默结束对话 |
+| 评论里写一长串过程 | 把 run log 当结果 | 写结论、链接、证据；过程在 runs 里有了 |
+| 切了 `in_review` 但没发评论 | 状态变化用户看到了"完成"，但没结果 | comment add **先**于 status `in_review` |
+| `blocked` 没说明 | 切状态没留言 | 切 `blocked` 之前必须发评论说原因 |
+| `@all` 滥用 | 把日常进展通报全员 | `@all` 只用在重大全员事项；Agent 通常被禁用 |
+| `git clone` 而不是 `repo checkout` | 用 git URL 直拉仓库 | `multica repo checkout <url>`——自动 worktree + 分支 |
 
----
+## 不在这一章里的细节
 
-## 链回
+| 想查什么 | 去哪一章 |
+|---|---|
+| issue 状态机、子 issue 触发策略 | [04-issue-lifecycle.md](04-issue-lifecycle.md) |
+| `@` 提及的副作用、谁收通知、squad mention 怎么写 | [05-comments-and-mentions.md](05-comments-and-mentions.md) |
+| metadata 写入门槛、推荐 key、不要写的反例 | [06-metadata.md](06-metadata.md) |
+| task 状态机、失败自动重试、resume 机制 | [08-tasks-and-runs.md](08-tasks-and-runs.md) |
+| project 资源（github_repo / local_directory） | [09-projects-and-resources.md](09-projects-and-resources.md) |
+| 怎么新建/复用一个 Agent（决策清单 + 步骤） | [07-build-an-agent.md](07-build-an-agent.md) |
+| 完整 CLI flag 列表 | [appendix-cli.md](appendix-cli.md) + 直接 `multica X --help` |
 
-- [04-issue-lifecycle.md](04-issue-lifecycle.md) — issue 状态机和分配规则
-- [05-comments-and-mentions.md](05-comments-and-mentions.md) — 三条红线、`@` 副作用、循环防御
-- [06-metadata.md](06-metadata.md) — metadata 的写入纪律
-- [appendix-cli.md](appendix-cli.md) — CLI 速查（只留组合规则、横切约定、副作用警告；完整 flag 看 `multica <cmd> --help`）
-
-下一步：[04-issue-lifecycle.md](04-issue-lifecycle.md) — issue 状态机的全貌。
+下一步：[04-issue-lifecycle.md](04-issue-lifecycle.md) — issue 的状态机和子 issue 触发策略。
