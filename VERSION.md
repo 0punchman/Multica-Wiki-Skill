@@ -34,7 +34,7 @@ multica --version
 每次 `multica` 发新 tag 后，由 **Skill 质量工程师**（或所有者指定的 Agent）跑一次：
 
 1. **拉新版 CLI**——确认 `multica --version` 与目标 tag 一致。
-2. **逐条 `--help` 比对**——按 [`references/03-cli-cheatsheet.md`](references/03-cli-cheatsheet.md) 里出现过的每个命令跑 `multica <cmd> --help`，把 flag/子命令差异记到下面的"变更日志"。**必须包含 `skill import` / `skill files upsert` / `agent skills set`**——这三条命令一旦漂移会让用户"装/挂 skill"流程整体跑不通，是历史盲点。
+2. **逐条 `--help` 比对**——按 [`references/appendix-cli.md`](references/appendix-cli.md) 里出现过的每个命令跑 `multica <cmd> --help`，把 flag/子命令差异记到下面的"变更日志"。**必须包含 `skill import` / `skill files upsert` / `agent skills set`**——这三条命令一旦漂移会让用户"装/挂 skill"流程整体跑不通，是历史盲点。
 3. **跑触发评测**——按 `skill-creator` 的 description-optimization 流程（`scripts/run_loop.py`）抽 10-20 条 trigger query，确认 handbook 还能在该触发的场景被命中。
 4. **更新 frontmatter**——把每条 SKILL.md 的 `multica_version.cli` / `commit` / `released` / `verified_at` 改到新版本。
 5. **更新本表**——把上面那张"当前对齐版本"刷成新版。

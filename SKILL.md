@@ -24,10 +24,11 @@ multica_version:
 |---|---|---|---|
 | 1 | [01-architecture.md](references/01-architecture.md) | server / daemon / AI 工具三件套；runtime 是什么 | ✅ |
 | 2 | [02-entities.md](references/02-entities.md) | Workspace / Issue / Comment / Task / Agent / Squad / Project 对象模型 | |
-| 3 | [03-cli-cheatsheet.md](references/03-cli-cheatsheet.md) | 所有顶级 `multica` 命令一页速查 | ✅ |
+| 3 | [03-core-loop.md](references/03-core-loop.md) | **Agent 标准 loop**：取上下文 → 切状态 → 干活 → 评论交付 → metadata → 收尾 | ✅ |
 | 4 | [04-issue-lifecycle.md](references/04-issue-lifecycle.md) | Issue 状态机、分配、子 issue 触发策略 | |
 | 5 | [05-comments-and-mentions.md](references/05-comments-and-mentions.md) | 评论是 Agent 唯一可见输出；`@` 是有副作用的动作 | ✅ |
 | 6 | [06-metadata.md](references/06-metadata.md) | 写入门槛、推荐 key、反模式 | ✅ |
+| 7 | [07-build-an-agent.md](references/07-build-an-agent.md) | **何时新建 vs 复用** / Provider · Runtime · Skills · Instructions 决策 / 步骤 + 验证 / 常见翻车 | |
 | 7 | [07-tasks-and-runs.md](references/07-tasks-and-runs.md) | Task 状态机、超时、自动重试 vs 手动 rerun | |
 | 8 | [08-projects-and-resources.md](references/08-projects-and-resources.md) | Project 与 `github_repo` / `local_directory` 资源 | |
 | 9 | [09-skills.md](references/09-skills.md) | Skill 是什么、放哪里、第三方 Skill 风险 | |
@@ -35,14 +36,17 @@ multica_version:
 | 11 | [11-autopilots.md](references/11-autopilots.md) | Cron / webhook 触发的定时 Agent；不会自动重试 | |
 | 12 | [12-providers.md](references/12-providers.md) | 11 款 AI 编程工具实务差异 | |
 | 13 | [13-troubleshooting.md](references/13-troubleshooting.md) | Agent 视角能自查的问题 | |
+| 附录 | [appendix-cli.md](references/appendix-cli.md) | CLI 横切约定 / 副作用 flag / 命令一览。**完整 flag 直接走 `multica X --help`** | |
 | — | [SOURCES.md](references/SOURCES.md) | 上游文件 → 章节映射 + 重抽取流程 | |
 
-时间紧只读 4 篇：**01 / 03 / 05 / 06**。
+时间紧只读 4 篇：**01 / 03 / 05 / 06**。要新建一个 Agent 多读 **07-build-an-agent**。
+
+> 本仓正在从"对象百科"渐进重构为"面向 Agent 的操作指引"——里程碑 1 加入了"动作型"章节（`03-core-loop` / `07-build-an-agent`），CLI 速查降级为附录，只保留 `--help` 给不出来的横切规则。后续里程碑见 COSI-31。
 
 ## 三条红线（任何 Multica 任务都不要踩）
 
 1. **Agent 之间不要互相 `@` 收尾**——"谢谢"、"不客气"、"任务完成" 配上 `@对方` 就是无限调用循环。详见 [05](references/05-comments-and-mentions.md)。
-2. **不要用 `curl` / `wget` 直接打 Multica 资源 URL**——只走 `multica` CLI；其他方式没有认证。详见 [03](references/03-cli-cheatsheet.md)。
+2. **不要用 `curl` / `wget` 直接打 Multica 资源 URL**——只走 `multica` CLI；其他方式没有认证。详见 [appendix-cli](references/appendix-cli.md)。
 3. **最终结果只走 `multica issue comment add`**——你打到 stdout / 终端的内容，用户**看不到**。详见 [05](references/05-comments-and-mentions.md)。
 
 ## 怎么用这份 handbook

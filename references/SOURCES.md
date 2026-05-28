@@ -16,10 +16,10 @@
 | `README.md` | [01-architecture.md](01-architecture.md), [`../README.md`](../README.md) |
 | `CLAUDE.md` | [01-architecture.md](01-architecture.md), [02-entities.md](02-entities.md) |
 | `AGENTS.md` | （指针文档，被 CLAUDE.md 包含） |
-| `CLI_AND_DAEMON.md` | [03-cli-cheatsheet.md](03-cli-cheatsheet.md), [11-autopilots.md](11-autopilots.md), [12-providers.md](12-providers.md) |
-| `CLI_INSTALL.md` | [03-cli-cheatsheet.md](03-cli-cheatsheet.md)（认证 / 初始化段） |
+| `CLI_AND_DAEMON.md` | [appendix-cli.md](appendix-cli.md), [11-autopilots.md](11-autopilots.md), [12-providers.md](12-providers.md) |
+| `CLI_INSTALL.md` | [appendix-cli.md](appendix-cli.md)（认证 / 初始化段） |
 | `apps/docs/content/docs/how-multica-works.zh.mdx` | [01-architecture.md](01-architecture.md) |
-| `apps/docs/content/docs/cli.zh.mdx` | [03-cli-cheatsheet.md](03-cli-cheatsheet.md) |
+| `apps/docs/content/docs/cli.zh.mdx` | [appendix-cli.md](appendix-cli.md) |
 | `apps/docs/content/docs/issues.zh.mdx` | [02-entities.md](02-entities.md), [04-issue-lifecycle.md](04-issue-lifecycle.md) |
 | `apps/docs/content/docs/assigning-issues.zh.mdx` | [04-issue-lifecycle.md](04-issue-lifecycle.md) |
 | `apps/docs/content/docs/comments.zh.mdx` | [05-comments-and-mentions.md](05-comments-and-mentions.md) |
