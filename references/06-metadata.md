@@ -95,4 +95,4 @@ multica issue metadata delete <id> --key <k>
 
 `--type` 一般不用——CLI 会自动推断。需要强制 string（避免被识别成 number / bool）时显式传。
 
-下一步：[07-tasks-and-runs.md](07-tasks-and-runs.md) — task 状态机和重试规则。
+下一步：[07-build-an-agent.md](07-build-an-agent.md) — 何时该新建一个 Agent，怎么建。

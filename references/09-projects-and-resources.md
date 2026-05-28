@@ -138,4 +138,4 @@ Agent 看到的仓库列表（`CLAUDE.md` / `AGENTS.md` 里的 `## Repositories`
 - **按 skill 划定资源可见性**——所有资源对本次 run 的所有 skill 可见
 - **缓存 / 同步**——`github_repo` 仍按需 `multica repo checkout`，没有预缓存
 
-下一步：[09-skills.md](09-skills.md) — Skill 是什么、放在哪、第三方 Skill 安全。
+下一步：[10-skills.md](10-skills.md) — Skill 是什么、放在哪、第三方 Skill 安全。

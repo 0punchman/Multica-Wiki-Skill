@@ -173,4 +173,4 @@ multica autopilot runs <id> [--limit N] --output json
 - **API 类型触发器**——schema 里保留了 `api` 类型但没有入站路由会触发它；UI 给已有的此类记录打 Deprecated 标签
 - **Per-trigger HMAC 签名校验、IP allowlist、按提供方的事件预设**——后续工作
 
-下一步：[12-providers.md](12-providers.md) — 11 款 AI 编程工具的实务差异。
+下一步：[13-providers.md](13-providers.md) — 11 款 AI 编程工具的实务差异。

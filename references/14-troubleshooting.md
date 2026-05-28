@@ -82,7 +82,7 @@ multica attachment --help            # 查完整子命令
 | 上限 | 2 次（1 原 + 1 重试） | 无上限 |
 | **会话** | 接续 | 全新 |
 
-详见 [07-tasks-and-runs.md](07-tasks-and-runs.md)。
+详见 [08-tasks-and-runs.md](08-tasks-and-runs.md)。
 
 ## "我有个能力 CLI 没覆盖"
 
@@ -107,7 +107,7 @@ multica daemon restart           # 重启会重新探测 PATH 上的 CLI
 multica daemon status            # 看检测到了哪些
 ```
 
-如果某个工具用的是非默认路径，需要 `MULTICA_<TOOL>_PATH` 环境变量。详见 [12-providers.md](12-providers.md)。
+如果某个工具用的是非默认路径，需要 `MULTICA_<TOOL>_PATH` 环境变量。详见 [13-providers.md](13-providers.md)。
 
 ## 在哪看 daemon 日志
 
@@ -125,7 +125,7 @@ multica daemon logs -n 200       # 最近 200 行
 
 - **`CLAUDE.md` / `AGENTS.md`**（按 provider）—— Multica 元 skill，含你的 Agent ID、当前 issue ID、CLI 速查
 - **`.multica/project/resources.json`**（如果 issue 属于 project）—— 项目资源列表
-- **挂的 skills**——按 provider 放在对应路径（见 [09-skills.md](09-skills.md)）
+- **挂的 skills**——按 provider 放在对应路径（见 [10-skills.md](10-skills.md)）
 
 如果你看不到这些——很可能 daemon 启动 Agent 时遇到了问题；评论说一声让用户检查。
 

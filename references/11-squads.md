@@ -107,4 +107,4 @@ multica squad member remove <squad-id> --member-id <uuid> --type agent|member
   4. 拒绝后续分配（`cannot assign to an archived squad`）
   5. **没有反归档命令**——要恢复路由请重建一个小队
 
-下一步：[11-autopilots.md](11-autopilots.md) — Cron / webhook 触发的 Agent。
+下一步：[12-autopilots.md](12-autopilots.md) — Cron / webhook 触发的 Agent。

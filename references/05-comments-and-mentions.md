@@ -125,7 +125,7 @@ multica agent list --output json                       # agent 的 id
 multica squad list --output json                       # squad 的 id
 ```
 
-(在 Squad 里队长 Agent 每次执行时会自动收到一份"花名册" briefing，里面已经有可以直接复制粘贴的 mention markdown——见 [10-squads.md](10-squads.md)。)
+(在 Squad 里队长 Agent 每次执行时会自动收到一份"花名册" briefing，里面已经有可以直接复制粘贴的 mention markdown——见 [11-squads.md](11-squads.md)。)
 
 ## `@all` 不会触发 Agent
 

@@ -20,7 +20,7 @@ Multica 内置支持 **11 款 AI 编程工具**——它们都实现同一套接
 
 ## 会话恢复——谁真的支持
 
-会话恢复机制：失败自动重试时把 session ID 传回去，Agent 接着上次上下文继续。详细见 [07-tasks-and-runs.md](07-tasks-and-runs.md)。
+会话恢复机制：失败自动重试时把 session ID 传回去，Agent 接着上次上下文继续。详细见 [08-tasks-and-runs.md](08-tasks-and-runs.md)。
 
 | 状态 | 工具 | 含义 |
 |---|---|---|
@@ -96,4 +96,4 @@ CLI agent 编排器。**模型绑定在 Agent 层**（`openclaw agents add --mod
 
 参数应用顺序：**Multica 内置默认 → daemon-wide env → 任务里 Agent 的 `custom_args`**。
 
-下一步：[13-troubleshooting.md](13-troubleshooting.md) — Agent 视角能自查的问题。
+下一步：[14-troubleshooting.md](14-troubleshooting.md) — Agent 视角能自查的问题。

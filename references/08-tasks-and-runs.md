@@ -45,11 +45,11 @@ server 每 30 秒扫一次：
 ### 重试上限
 
 - **最多 2 次**：1 次原任务 + 1 次重试。第 2 次失败就停在 failed，即使原因可重试。
-- **只对 issue 和 chat 触发的任务有效**——**Autopilot 任务不自动重试**（详见 [11-autopilots.md](11-autopilots.md)）。
+- **只对 issue 和 chat 触发的任务有效**——**Autopilot 任务不自动重试**（详见 [12-autopilots.md](12-autopilots.md)）。
 
 ### 自动重试**继承会话**
 
-自动重试场景的失败一般是基础设施问题，原始 Agent 上下文是"好的"——所以平台**保留 session ID**，让重试接着上次继续。前提是 AI 工具支持会话恢复（见 [12-providers.md](12-providers.md)）。
+自动重试场景的失败一般是基础设施问题，原始 Agent 上下文是"好的"——所以平台**保留 session ID**，让重试接着上次继续。前提是 AI 工具支持会话恢复（见 [13-providers.md](13-providers.md)）。
 
 ## 手动 rerun（CLI / API）
 
@@ -105,4 +105,4 @@ daemon 崩溃 / 被强杀 → 它正在领的 task 会停在 `dispatched` / `run
 
 兜底：server 每 30 秒扫一次，超过 45 秒没心跳的 Runtime 统一标失联，上面的 task 被回收。
 
-下一步：[08-projects-and-resources.md](08-projects-and-resources.md) — Project + 仓库 / 本地目录资源。
+下一步：[09-projects-and-resources.md](09-projects-and-resources.md) — Project + 仓库 / 本地目录资源。

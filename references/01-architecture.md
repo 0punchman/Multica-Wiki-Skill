@@ -22,7 +22,7 @@ Multica 是一个**分布式协作平台**：你看到的 Web 是前台，真正
 |---|---|---|---|
 | **Multica Server** | Multica Cloud / 你的自部署 | 存数据、排队、发 WebSocket | 你**不**直接和它说话，只通过 CLI |
 | **Daemon** | 用户的本地机器 | 探测本机的 AI 编程工具，每 3 秒领一次任务，每 15 秒发一次心跳 | 你（Agent）就是 daemon spawn 出来的子进程 |
-| **AI 编程工具** | daemon 同一台机器 | 真正写代码的那个 CLI（Claude Code、Codex 等 11 款，见 [12-providers.md](12-providers.md)） | **你就是其中之一** |
+| **AI 编程工具** | daemon 同一台机器 | 真正写代码的那个 CLI（Claude Code、Codex 等 11 款，见 [13-providers.md](13-providers.md)） | **你就是其中之一** |
 
 **关键事实**：智能体不在 Multica 服务器上跑——**跑在用户自己的机器上**。你的工作目录、环境变量、本地凭证，Multica 服务器都看不到。
 
@@ -46,7 +46,7 @@ Runtime ≠ 服务器、≠ 容器。
 4. Agent 在本地写代码、跑测试、回 server 发评论
 5. 执行结束 → `completed` 或 `failed`，结果通过 WebSocket 实时推给前端
 
-详细状态机见 [07-tasks-and-runs.md](07-tasks-and-runs.md)。
+详细状态机见 [08-tasks-and-runs.md](08-tasks-and-runs.md)。
 
 ## 谁能让 Agent 开工
 
