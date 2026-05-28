@@ -20,16 +20,19 @@
 | `multica issue metadata list / set / delete` | [03-core-loop.md](references/03-core-loop.md), [06-metadata.md](references/06-metadata.md) | v0.3.10 | 2026-05-28 | medium（推荐 key 列表会变） |
 | `multica issue rerun` | [appendix-cli.md](references/appendix-cli.md), [08-tasks-and-runs.md](references/08-tasks-and-runs.md) | v0.3.10 | 2026-05-28 | medium |
 | `multica issue runs / run-messages` | [08-tasks-and-runs.md](references/08-tasks-and-runs.md) | v0.3.10 | 2026-05-28 | medium |
-| `multica skill list / get / create / update / delete` | [10-skills.md](references/10-skills.md) | v0.3.10 | 2026-05-28 | low |
-| `multica skill import --url` | [README.md](README.md), [10-skills.md](references/10-skills.md) | v0.3.10 | 2026-05-28 | **high**（错了用户挂不上 skill；v0.3.x 只有单 flag `--url`） |
-| `multica skill files list / upsert / delete` | [10-skills.md](references/10-skills.md) | v0.3.10 | 2026-05-28 | medium（`upsert` 不是 `upload`） |
+| `multica skill list / get / create / update / delete` | [10-skills.md](references/10-skills.md), [15-build-a-skill.md](references/15-build-a-skill.md) | v0.3.10 | 2026-05-28 | low |
+| `multica skill import --url` | [README.md](README.md), [10-skills.md](references/10-skills.md), [15-build-a-skill.md](references/15-build-a-skill.md) | v0.3.10 | 2026-05-28 | **high**（错了用户挂不上 skill；v0.3.x 只有单 flag `--url`） |
+| `multica skill files list / upsert / delete` | [10-skills.md](references/10-skills.md), [15-build-a-skill.md](references/15-build-a-skill.md) | v0.3.10 | 2026-05-28 | medium（`upsert` 不是 `upload`） |
 | `multica agent create` | [07-build-an-agent.md](references/07-build-an-agent.md) | v0.3.10 | 2026-05-28 | **high**（新建 Agent 走它，flag 集是 build-an-agent 章的核心） |
 | `multica agent update` | [07-build-an-agent.md](references/07-build-an-agent.md), [appendix-cli.md](references/appendix-cli.md) | v0.3.10 | 2026-05-28 | medium（整体替换语义不能漂） |
-| `multica agent skills list / set` | [07-build-an-agent.md](references/07-build-an-agent.md), [10-skills.md](references/10-skills.md), [appendix-cli.md](references/appendix-cli.md) | v0.3.10 | 2026-05-28 | **high**（`set` 全量替换；v0.3.x 没有 `add` / `remove`） |
+| `multica agent skills list / set` | [07-build-an-agent.md](references/07-build-an-agent.md), [10-skills.md](references/10-skills.md), [15-build-a-skill.md](references/15-build-a-skill.md), [appendix-cli.md](references/appendix-cli.md) | v0.3.10 | 2026-05-28 | **high**（`set` 全量替换；v0.3.x 没有 `add` / `remove`） |
 | `multica runtime list` | [07-build-an-agent.md](references/07-build-an-agent.md) | v0.3.10 | 2026-05-28 | low |
 | `multica repo checkout` | [03-core-loop.md](references/03-core-loop.md), [appendix-cli.md](references/appendix-cli.md), [SOURCES.md](references/SOURCES.md) | v0.3.10 | 2026-05-28 | low |
-| `multica autopilot ...` | [12-autopilots.md](references/12-autopilots.md) | v0.3.10 | 待逐子命令落表 | medium |
-| `multica squad ...` | [11-squads.md](references/11-squads.md) | v0.3.10 | 待逐子命令落表 | medium |
+| `multica autopilot create / update / delete / trigger / runs` | [12-autopilots.md](references/12-autopilots.md), [17-build-an-autopilot.md](references/17-build-an-autopilot.md) | v0.3.10 | 2026-05-28 | medium |
+| `multica autopilot trigger-add / trigger-update / trigger-delete / trigger-rotate-url` | [12-autopilots.md](references/12-autopilots.md), [17-build-an-autopilot.md](references/17-build-an-autopilot.md) | v0.3.10 | 2026-05-28 | **high**（webhook URL 即 bearer 凭证；rotate 漏了会泄漏触发权） |
+| `multica squad create / update / delete / get / list` | [11-squads.md](references/11-squads.md), [16-build-a-squad.md](references/16-build-a-squad.md) | v0.3.10 | 2026-05-28 | medium |
+| `multica squad member list / add / remove` | [11-squads.md](references/11-squads.md), [16-build-a-squad.md](references/16-build-a-squad.md) | v0.3.10 | 2026-05-28 | medium（`--type agent\|member` 必填，错了报 not found） |
+| `multica squad activity` | [11-squads.md](references/11-squads.md), [16-build-a-squad.md](references/16-build-a-squad.md) | v0.3.10 | 2026-05-28 | medium |
 | `multica attachment ...` | [appendix-cli.md](references/appendix-cli.md) | v0.3.10 | 待补 | medium |
 | `multica daemon ...` | [01-architecture.md](references/01-architecture.md), [14-troubleshooting.md](references/14-troubleshooting.md) | v0.3.10 | 待补 | low |
 

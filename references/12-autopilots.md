@@ -1,5 +1,8 @@
 # 11 · Autopilots（定时 / Webhook 触发）
 
+> **本章是名词参考型**——Autopilot 的关键性质 / 失败回退 / webhook 状态码语义。
+> **要新建 / 配 cron / 加 webhook 触发器，看动作章 [`17-build-an-autopilot.md`](17-build-an-autopilot.md)。**
+
 Autopilots 让 Agent **按调度自动开工**——cron 到点 / webhook 到达 / 用户手动触发。和分配 / `@` 提及 / chat（都是用户主动喊一声）相比，Autopilots 是**时间驱动**的常驻指令，适合定期巡检、周期性报告、凌晨清理任务。
 
 ## 关键性质（必读）

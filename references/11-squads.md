@@ -1,5 +1,8 @@
 # 10 · Squads（小队）
 
+> **本章是名词参考型**——小队的对象模型 / 队长 briefing 三段 / 自动唤醒规则。
+> **要新建 / 扩成员 / 换队长，看动作章 [`16-build-a-squad.md`](16-build-a-squad.md)。**
+
 小队 = **一组 Agent + 可选 Member + 一个队长 Agent**。assignee picker 里能选小队，触发会落到队长头上，由队长 `@` 派给合适的成员。
 
 ## 为什么需要小队

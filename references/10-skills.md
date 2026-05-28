@@ -1,5 +1,8 @@
 # 09 · Skills（技能包）
 
+> **本章是名词参考型**——Skill 是什么、放哪里、第三方风险有哪些。
+> **要新建 / 复用 / 导入 Skill，看动作章 [`15-build-a-skill.md`](15-build-a-skill.md)。**
+
 Skill 是给 Agent 的**专业知识包**——一个 `SKILL.md` + 可选的支持文件（脚本、配置、参考模板），告诉 Agent "遇到某类任务时该怎么想、怎么做"。
 
 Multica 采用 [Anthropic Agent Skills](https://agentskills.io) 开放标准——所有符合规范的 Skill（Anthropic 官方、ClawHub、skills.sh 上的包）都能直接导入。

@@ -36,12 +36,15 @@ multica_version:
 | 12 | [12-autopilots.md](references/12-autopilots.md) | Cron / webhook 触发的定时 Agent；不会自动重试 | |
 | 13 | [13-providers.md](references/13-providers.md) | 11 款 AI 编程工具实务差异 | |
 | 14 | [14-troubleshooting.md](references/14-troubleshooting.md) | Agent 视角能自查的问题 | |
+| 15 | [15-build-a-skill.md](references/15-build-a-skill.md) | **何时新建 vs 复用 Skill** / 决策清单 / 步骤 + 验证 / 常见翻车（与 [10-skills.md](references/10-skills.md) 配对） | |
+| 16 | [16-build-a-squad.md](references/16-build-a-squad.md) | **何时新建小队** / 队长 + 成员 / Squad Instructions / 步骤 + 验证 / 常见翻车（与 [11-squads.md](references/11-squads.md) 配对） | |
+| 17 | [17-build-an-autopilot.md](references/17-build-an-autopilot.md) | **何时建 Autopilot** / cron · webhook / `create_issue` vs `run_only` / 步骤 + 验证 / 常见翻车（与 [12-autopilots.md](references/12-autopilots.md) 配对） | |
 | 附录 | [appendix-cli.md](references/appendix-cli.md) | CLI 横切约定 / 副作用 flag / 命令一览。**完整 flag 直接走 `multica X --help`** | |
 | — | [SOURCES.md](references/SOURCES.md) | 上游文件 → 章节映射 + 重抽取流程 | |
 
-时间紧只读 4 篇：**01 / 03 / 05 / 06**。要新建一个 Agent 多读 **07-build-an-agent**。
+时间紧只读 4 篇：**01 / 03 / 05 / 06**。新建一个 Agent / Skill / Squad / Autopilot 分别多读 **07 / 15 / 16 / 17**。
 
-> 本仓正在从"对象百科"渐进重构为"面向 Agent 的操作指引"——里程碑 1 加入了"动作型"章节（`03-core-loop` / `07-build-an-agent`），CLI 速查降级为附录，只保留 `--help` 给不出来的横切规则。后续里程碑见 COSI-31。
+> 本仓正在从"对象百科"渐进重构为"面向 Agent 的操作指引"。里程碑 1 加入了"动作型"章节（`03-core-loop` / `07-build-an-agent`），CLI 速查降级为附录。**里程碑 2** 把"动作章 ↔ 名词章"配对铺开：新增 `15-build-a-skill` / `16-build-a-squad` / `17-build-an-autopilot`，与 `10-skills` / `11-squads` / `12-autopilots` 一一对应——名词章保留 wiki 属性（"X 是什么、有哪些类型"），动作章承接执行步骤（"什么时候建、决策、CLI、验证、翻车"）。后续里程碑见 COSI-31。
 
 ## 三条红线（任何 Multica 任务都不要踩）
 
